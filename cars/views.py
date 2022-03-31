@@ -12,6 +12,7 @@ def cars_list(request):
         cars = Car.objects.all()
         serializer = CarSerializer(cars, many=True)
         return Response(serializer.data)
+
     elif request.method == 'POST':
         serializer = CarSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -22,15 +23,18 @@ def cars_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def cars_detail(request, pk):
     car = get_object_or_404(Car, pk=pk)
+
     if request.method == 'GET':
        serializer = CarSerializer(car);
        return Response(serializer.data)
+
     elif request.method == 'PUT':
        car = get_object_or_404(Car, pk=pk)
        serializer = CarSerializer(car, data=request.data )
        serializer.is_valid(raise_exception=True)
        serializer.save()
        return Response(serializer.data)
+
     elif request.method == "DELETE":
         car.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
