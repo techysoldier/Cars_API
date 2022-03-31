@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,10 +21,15 @@ def cars_list(request):
 
 @api_view(['GET'])
 def cars_detail(request, pk):
-    try:
-         car = Car.objects.get(pk=pk)
-         serializer = CarSerializer(car);
-         return Response(serializer.data)
-    
-    except Car.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    car = get_object_or_404(Car, pk=pk)
+    if request.method == 'GET':
+       serializer = CarSerializer(car);
+       return Response(serializer.data)
+    elif request.method == 'PUT':
+       car = get_object_or_404(Car, pk=pk)
+       serializer = CarSerializer(car, data=request.data )
+       serializer.is_valid(raise_exception=True)
+       serializer.save()
+       return Response(serializer.data)
+
+     
